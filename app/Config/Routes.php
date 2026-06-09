@@ -3,4 +3,21 @@
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'Games::index');
+$routes->get('games', 'Games::index');
+$routes->get('stats', 'Games::stats');
+
+// Game Details route with two parameters (ID and slug) for SEO and assignment requirement
+$routes->get('games/show/(:num)/(:any)', 'Games::show/$1/$2');
+
+// Auth routes
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::attemptLogin');
+$routes->get('logout', 'Auth::logout');
+
+// CRUD routes
+$routes->get('games/create', 'Games::create');
+$routes->post('games/store', 'Games::store');
+$routes->get('games/edit/(:num)', 'Games::edit/$1');
+$routes->post('games/update/(:num)', 'Games::update/$1');
+$routes->post('games/delete/(:num)', 'Games::delete/$1');
