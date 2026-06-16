@@ -155,6 +155,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--steam-blue);
         }
+        /* Custom Pagination Styling */
+        .pagination {
+            margin-bottom: 0;
+            gap: 5px;
+        }
+        .pagination .page-item .page-link {
+            background-color: var(--steam-bg-darker);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--steam-light);
+            transition: all 0.2s ease;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: var(--steam-blue);
+            color: var(--steam-bg-darker);
+            border-color: var(--steam-blue);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--steam-blue);
+            border-color: var(--steam-blue);
+            color: var(--steam-bg-darker);
+            font-weight: bold;
+        }
+        .pagination .page-item.disabled .page-link {
+            background-color: var(--steam-bg-card);
+            border-color: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -162,7 +189,7 @@
     <!-- Header / Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="<?= base_url() ?>">
+            <a class="navbar-brand d-flex align-items-center" href="<?= base_url('games') ?>">
                 <i class="fab fa-steam me-2 text-info fs-3"></i>
                 <span>STEAM DB</span>
             </a>
@@ -172,8 +199,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-nav-item">
-                        <a class="nav-link <?= (url_is('games') || url_is('/')) ? 'active text-info' : '' ?>" href="<?= base_url() ?>">
-                            <i class="fas fa-gamepad me-1"></i>Hry
+                        <a class="nav-link <?= url_is('/') ? 'active text-info' : '' ?>" href="<?= base_url('/') ?>">
+                            <i class="fas fa-tachometer-alt me-1"></i>Nástěnka
                         </a>
                     </li>
                     <li class="nav-nav-item">
