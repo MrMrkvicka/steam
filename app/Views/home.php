@@ -78,11 +78,7 @@
                 <div class="col-sm-6 col-md-4 col-lg-3">
                     <div class="card game-card">
                         <div class="game-card-img-wrapper">
-                            <?php if (!empty($game['background'])): ?>
-                                <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img">
-                            <?php else: ?>
-                                <img src="https://via.placeholder.com/460x215.png?text=No+Image" alt="No image" class="game-card-img">
-                            <?php endif; ?>
+                            <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=No+Image';">
                         </div>
                         <div class="card-body d-flex flex-column p-3">
                             <h5 class="card-title text-truncate fw-bold mb-1" title="<?= esc($game['name']) ?>">
@@ -95,10 +91,10 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <?= $steamHelper->formatPrice((float)$game['price']) ?>
                                 <div class="btn-group">
-                                    <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                                    <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                         Detail
                                     </a>
-                                    <a href="<?= base_url('library/toggle/' . $game['appid']) ?>" class="btn btn-outline-danger btn-sm" title="Odebrat z knihovny">
+                                    <a href="<?= base_url('library/toggle/' . $game['id']) ?>" class="btn btn-outline-danger btn-sm" title="Odebrat z knihovny">
                                         <i class="fas fa-times"></i>
                                     </a>
                                 </div>
@@ -132,11 +128,7 @@
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card game-card">
                     <div class="game-card-img-wrapper">
-                        <?php if (!empty($game['background'])): ?>
-                            <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img">
-                        <?php else: ?>
-                            <img src="https://via.placeholder.com/460x215.png?text=No+Image" alt="No image" class="game-card-img">
-                        <?php endif; ?>
+                        <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=No+Image';">
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <h5 class="card-title text-truncate fw-bold mb-1" title="<?= esc($game['name']) ?>">
@@ -148,7 +140,7 @@
                         
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <?= $steamHelper->formatPrice((float)$game['price']) ?>
-                            <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                 Detail <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>

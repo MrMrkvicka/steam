@@ -104,7 +104,7 @@
 
         .game-card-img-wrapper {
             position: relative;
-            padding-top: 56.25%; /* 16:9 ratio */
+            padding-top: 46.74%; /* 460:215 Steam header ratio */
             overflow: hidden;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
@@ -182,6 +182,17 @@
             border-color: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.2);
         }
+        
+        /* High Legibility text overrides for dark theme */
+        .text-muted {
+            color: #a2b3c4 !important;
+        }
+        .text-secondary {
+            color: #b0c4d6 !important;
+        }
+        .game-card {
+            color: var(--steam-light);
+        }
     </style>
 </head>
 <body>
@@ -210,7 +221,7 @@
                     </li>
                     <?php if (session()->get('isLoggedIn')): ?>
                     <li class="nav-nav-item">
-                        <a class="nav-link text-success <?= url_is('games/create') ? 'active fw-bold' : '' ?>" href="<?= base_url('games/create') ?>">
+                        <a class="nav-link text-success <?= url_is('games/add') ? 'active fw-bold' : '' ?>" href="<?= base_url('games/add') ?>">
                             <i class="fas fa-plus-circle me-1"></i>Přidat hru
                         </a>
                     </li>
@@ -226,6 +237,9 @@
                             <i class="fas fa-sign-out-alt me-1"></i>Odhlásit se
                         </a>
                     <?php else: ?>
+                        <a href="<?= base_url('register') ?>" class="btn btn-steam-outline btn-sm me-2">
+                            <i class="fas fa-user-plus me-1"></i>Registrace
+                        </a>
                         <a href="<?= base_url('login') ?>" class="btn btn-steam-blue btn-sm">
                             <i class="fas fa-sign-in-alt me-1"></i>Přihlásit se
                         </a>

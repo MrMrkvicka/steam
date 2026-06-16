@@ -14,11 +14,13 @@ $routes->get('games/show/(:num)/(:any)', 'Games::show/$1/$2');
 // Auth routes
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attemptLogin');
+$routes->get('register', 'Auth::register');
+$routes->post('register', 'Auth::attemptRegister');
 $routes->get('logout', 'Auth::logout');
 
 // CRUD routes
-$routes->get('games/create', 'Games::create');
-$routes->post('games/store', 'Games::store');
+$routes->get('games/add', 'Games::add');
+$routes->post('games/create', 'Games::create');
 $routes->get('games/edit/(:num)', 'Games::edit/$1');
 $routes->post('games/update/(:num)', 'Games::update/$1');
 $routes->post('games/delete/(:num)', 'Games::delete/$1');

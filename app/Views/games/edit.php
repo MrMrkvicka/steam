@@ -9,7 +9,7 @@
         <div class="mb-4">
             <?= $steamHelper->generateBreadcrumbs([
                 'Hry' => 'games',
-                $game['name'] => 'games/show/' . $game['appid'] . '/' . url_title($game['name']),
+                $game['name'] => 'games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name']),
                 'Upravit' => null
             ]) ?>
         </div>
@@ -21,7 +21,7 @@
             </div>
             
             <div class="card-body p-4">
-                <form action="<?= base_url('games/update/' . $game['appid']) ?>" method="post" enctype="multipart/form-data">
+                <form action="<?= base_url('games/update/' . $game['id']) ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     <input type="hidden" name="current_background" value="<?= esc($game['background']) ?>">
 
@@ -31,8 +31,8 @@
                             <h4 class="text-white mb-3 border-bottom border-secondary pb-1">Základní informace</h4>
                             
                             <div class="mb-3">
-                                <label for="appid" class="form-label text-muted">Steam AppID (Nelze změnit)</label>
-                                <input type="number" id="appid" class="form-control bg-dark border-secondary text-muted" value="<?= esc($game['appid']) ?>" disabled>
+                                <label for="id" class="form-label text-muted">Steam AppID (Nelze změnit)</label>
+                                <input type="number" id="id" class="form-control bg-dark border-secondary text-muted" value="<?= esc($game['id']) ?>" disabled>
                             </div>
 
                             <div class="mb-3">
@@ -166,13 +166,13 @@
 
                         <div class="mb-3">
                             <label for="pc_requirements" class="form-label">Minimální PC Požadavky</label>
-                            <textarea name="pc_requirements" id="pc_requirements" class="form-control bg-dark border-secondary text-light" rows="4"><?= old('pc_requirements', $game['pc_requirements']) ?></textarea>
+                            <textarea name="pc_requirements" id="pc_requirements" class="form-control bg-dark border-secondary text-light" rows="4"><?= old('pc_requirements', $steamHelper->getCleanRequirements($game['pc_requirements'])) ?></textarea>
                         </div>
                     </div>
 
                     <!-- Submit Actions -->
                     <div class="d-flex justify-content-end gap-3 mt-4 border-top border-secondary pt-3">
-                        <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline py-2 px-4">Zrušit</a>
+                        <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline py-2 px-4">Zrušit</a>
                         <button type="submit" class="btn btn-steam-green py-2 px-5">
                             <i class="fas fa-save me-2"></i>Uložit změny
                         </button>

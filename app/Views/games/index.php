@@ -10,7 +10,7 @@
     </div>
     <div class="col-md-4 text-md-end mt-3 mt-md-0">
         <?php if (session()->get('isLoggedIn')): ?>
-            <a href="<?= base_url('games/create') ?>" class="btn btn-steam-green py-2 px-4 shadow">
+            <a href="<?= base_url('games/add') ?>" class="btn btn-steam-green py-2 px-4 shadow">
                 <i class="fas fa-plus-circle me-2"></i>Přidat novou hru
             </a>
         <?php endif; ?>
@@ -23,27 +23,47 @@
 </div>
 
 <!-- Filter Buttons Section -->
-<div class="mb-4 d-flex flex-wrap gap-2 align-items-center justify-content-between p-3 rounded" style="background-color: var(--steam-bg-card); border: 1px solid rgba(255, 255, 255, 0.05);">
+<div class="mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-between p-3 rounded" style="background-color: var(--steam-bg-card); border: 1px solid rgba(255, 255, 255, 0.05);">
     <div class="d-flex flex-wrap align-items-center gap-2">
         <span class="text-muted small me-2"><i class="fas fa-filter text-info"></i> Filtrovat hry:</span>
-        <a href="<?= base_url('games') ?>" class="btn <?= empty($activeFilter) ? 'btn-steam-blue' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games' . (!empty($search) ? '?search=' . urlencode($search) : '')) ?>" class="btn <?= empty($activeFilter) ? 'btn-steam-blue' : 'btn-steam-outline' ?> btn-sm px-3">
             Všechny hry
         </a>
-        <a href="<?= base_url('games?filter=library') ?>" class="btn <?= $activeFilter === 'library' ? 'btn-success text-white' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games?filter=library' . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>" class="btn <?= $activeFilter === 'library' ? 'btn-success text-white' : 'btn-steam-outline' ?> btn-sm px-3">
             <i class="fas fa-bookmark me-1"></i>Moje knihovna
         </a>
-        <a href="<?= base_url('games?filter=created') ?>" class="btn <?= $activeFilter === 'created' ? 'btn-warning text-dark fw-bold' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games?filter=created' . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>" class="btn <?= $activeFilter === 'created' ? 'btn-warning text-dark fw-bold' : 'btn-steam-outline' ?> btn-sm px-3">
             <i class="fas fa-plus-circle me-1"></i>Moje přidané (vytvořené)
         </a>
     </div>
-    
-    <?php if (!empty($activeFilter)): ?>
-        <div>
-            <a href="<?= base_url('games') ?>" class="text-danger text-decoration-none small">
-                Zrušit filtr <i class="fas fa-times ms-1"></i>
-            </a>
-        </div>
-    <?php endif; ?>
+
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <!-- Search form -->
+        <form action="<?= base_url('games') ?>" method="get" class="d-flex align-items-center">
+            <?php if (!empty($activeFilter)): ?>
+                <input type="hidden" name="filter" value="<?= esc($activeFilter) ?>">
+            <?php endif; ?>
+            <div class="input-group input-group-sm">
+                <input type="text" name="search" class="form-control bg-dark border-secondary text-light" placeholder="Hledat podle názvu..." value="<?= esc($search ?? '') ?>" style="max-width: 220px;">
+                <button class="btn btn-steam-blue" type="submit" title="Hledat">
+                    <i class="fas fa-search"></i>
+                </button>
+                <?php if (!empty($search)): ?>
+                    <a href="<?= base_url('games' . (!empty($activeFilter) ? '?filter=' . $activeFilter : '')) ?>" class="btn btn-outline-danger d-flex align-items-center justify-content-center" title="Vymazat vyhledávání">
+                        <i class="fas fa-times"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </form>
+        
+        <?php if (!empty($activeFilter) || !empty($search)): ?>
+            <div>
+                <a href="<?= base_url('games') ?>" class="text-danger text-decoration-none small" title="Zrušit všechny filtry a vyhledávání">
+                    Zrušit vše <i class="fas fa-times-circle ms-1"></i>
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Games Grid Section -->
@@ -53,11 +73,7 @@
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card game-card">
                     <div class="game-card-img-wrapper">
-                        <?php if (!empty($game['background'])): ?>
-                            <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img">
-                        <?php else: ?>
-                            <img src="https://via.placeholder.com/460x215.png?text=No+Image" alt="No image" class="game-card-img">
-                        <?php endif; ?>
+                        <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=No+Image';">
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <h5 class="card-title text-truncate fw-bold mb-1" title="<?= esc($game['name']) ?>">
@@ -86,7 +102,7 @@
                             <!-- Helper Price Formatting -->
                             <?= $steamHelper->formatPrice((float)$game['price']) ?>
 
-                            <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                 Detail <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -95,12 +111,12 @@
                     <?php if (session()->get('isLoggedIn')): ?>
                         <!-- Admin controls floating overlays -->
                         <div class="card-footer bg-dark border-top border-secondary d-flex justify-content-between py-2 px-3">
-                            <a href="<?= base_url('games/edit/' . $game['appid']) ?>" class="btn btn-outline-warning btn-sm border-0 py-1 px-2">
+                            <a href="<?= base_url('games/edit/' . $game['id']) ?>" class="btn btn-outline-warning btn-sm border-0 py-1 px-2">
                                 <i class="fas fa-edit me-1"></i>Upravit
                             </a>
                             <button type="button" 
                                     class="btn btn-outline-danger btn-sm border-0 py-1 px-2 btn-delete-trigger" 
-                                    data-id="<?= $game['appid'] ?>" 
+                                    data-id="<?= $game['id'] ?>" 
                                     data-name="<?= esc($game['name']) ?>">
                                 <i class="fas fa-trash-alt me-1"></i>Smazat
                             </button>
@@ -121,9 +137,7 @@
 <!-- Pagination Links (Stránkování) -->
 <?php if ($pager): ?>
     <div class="d-flex justify-content-center mt-5">
-        <div class="bg-dark p-2 rounded shadow-sm border border-secondary">
-            <?= $pager->links() ?>
-        </div>
+        <?= $pager->links('default', 'steam_pager') ?>
     </div>
 <?php endif; ?>
 

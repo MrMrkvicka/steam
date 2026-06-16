@@ -4,18 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class GameModel extends Model
+class Game extends Model
 {
-    protected $table            = 'steam';
-    protected $primaryKey       = 'appid';
+    protected $table            = 'games';
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     
-    // Enable soft deletes as required
+    // Enable soft deletes
     protected $useSoftDeletes   = true;
     
     protected $allowedFields    = [
-        'appid', 'name', 'release_date', 'english', 'developer', 'publisher', 
+        'id', 'name', 'release_date', 'english', 'developer', 'publisher', 
         'platforms', 'required_age', 'categories', 'genres', 'achievements', 
         'owners', 'price'
     ];
