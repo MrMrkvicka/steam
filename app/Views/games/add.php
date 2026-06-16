@@ -20,7 +20,7 @@
             </div>
             
             <div class="card-body p-4">
-                <form action="<?= base_url('games/store') ?>" method="post" enctype="multipart/form-data">
+                <form action="<?= base_url('games/create') ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
 
                     <div class="row g-4 mb-4">
@@ -29,8 +29,8 @@
                             <h4 class="text-white mb-3 border-bottom border-secondary pb-1">Základní informace</h4>
                             
                             <div class="mb-3">
-                                <label for="appid" class="form-label">Steam AppID <span class="text-danger">*</span></label>
-                                <input type="number" name="appid" id="appid" class="form-control bg-dark border-secondary text-light" placeholder="Např. 440" value="<?= old('appid') ?>" required>
+                                <label for="id" class="form-label">Steam AppID <span class="text-danger">*</span></label>
+                                <input type="number" name="id" id="id" class="form-control bg-dark border-secondary text-light" placeholder="Např. 440" value="<?= old('id') ?>" required>
                             </div>
 
                             <div class="mb-3">

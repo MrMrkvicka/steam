@@ -17,8 +17,8 @@ $routes->post('login', 'Auth::attemptLogin');
 $routes->get('logout', 'Auth::logout');
 
 // CRUD routes
-$routes->get('games/create', 'Games::create');
-$routes->post('games/store', 'Games::store');
+$routes->get('games/add', 'Games::add');
+$routes->post('games/create', 'Games::create');
 $routes->get('games/edit/(:num)', 'Games::edit/$1');
 $routes->post('games/update/(:num)', 'Games::update/$1');
 $routes->post('games/delete/(:num)', 'Games::delete/$1');

@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Models\GameModel;
+use App\Models\Game;
+use App\Models\User;
 use App\Libraries\SteamHelper;
 use Config\Steam as SteamConfig;
 
@@ -15,7 +16,7 @@ class Games extends BaseController
 
     public function __construct()
     {
-        $this->gameModel = new GameModel();
+        $this->gameModel = new Game();
         $this->steamHelper = new SteamHelper();
         $this->steamConfig = new SteamConfig();
         $this->db = \Config\Database::connect();
@@ -29,8 +30,8 @@ class Games extends BaseController
     public function index()
     {
         // Join with media to get background images for cards
-        $this->gameModel->select('steam.*, steam_media.background');
-        $this->gameModel->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left');
+        $this->gameModel->select('games.*, game_media.background');
+        $this->gameModel->join('game_media', 'game_media.game_id = games.id', 'left');
         
         $filter = $this->request->getGet('filter');
         $activeFilter = '';
@@ -38,22 +39,22 @@ class Games extends BaseController
         if ($filter === 'library') {
             $library = session()->get('library') ?? [];
             if (!empty($library)) {
-                $this->gameModel->whereIn('steam.appid', $library);
+                $this->gameModel->whereIn('games.id', $library);
             } else {
-                $this->gameModel->where('steam.appid', 0); // Force empty result
+                $this->gameModel->where('games.id', 0); // Force empty result
             }
             $activeFilter = 'library';
         } elseif ($filter === 'created') {
             $created = session()->get('created_games') ?? [];
             if (!empty($created)) {
-                $this->gameModel->whereIn('steam.appid', $created);
+                $this->gameModel->whereIn('games.id', $created);
             } else {
-                $this->gameModel->where('steam.appid', 0); // Force empty result
+                $this->gameModel->where('games.id', 0); // Force empty result
             }
             $activeFilter = 'created';
         }
         
-        $games = $this->gameModel->paginate($this->steamConfig->gamesPerPage);
+        $games = $this->gameModel->paginate($this->steamConfig->perPage ?? 20);
         
         return view('games/index', [
             'title'        => 'Přehled her | Steam DB',
@@ -67,18 +68,18 @@ class Games extends BaseController
     /**
      * Shows detail of a specific game.
      *
-     * @param int $id The game AppID
+     * @param int $id The game ID
      * @param string $slug Optional slug for SEO url
      * @return string|\CodeIgniter\HTTP\RedirectResponse
      */
     public function show($id, $slug = '')
     {
         $game = $this->gameModel
-            ->select('steam.*, steam_description.detailed_description, steam_description.about_the_game, steam_description.short_description, steam_media.background, steam_media.screenshots, steam_requirements.pc_requirements, steam_requirements.mac_requirements, steam_requirements.linux_requirements')
-            ->join('steam_description', 'steam_description.steam_appid = steam.appid', 'left')
-            ->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left')
-            ->join('steam_requirements', 'steam_requirements.steam_appid = steam.appid', 'left')
-            ->where('steam.appid', $id)
+            ->select('games.*, game_descriptions.detailed_description, game_descriptions.about_the_game, game_descriptions.short_description, game_media.background, game_media.screenshots, game_requirements.pc_requirements, game_requirements.mac_requirements, game_requirements.linux_requirements')
+            ->join('game_descriptions', 'game_descriptions.game_id = games.id', 'left')
+            ->join('game_media', 'game_media.game_id = games.id', 'left')
+            ->join('game_requirements', 'game_requirements.game_id = games.id', 'left')
+            ->where('games.id', $id)
             ->first();
 
         if (!$game) {
@@ -86,10 +87,10 @@ class Games extends BaseController
         }
 
         // Get genres using M:N relationship
-        $genres = $this->db->table('steam_genres')
+        $genres = $this->db->table('game_genres')
             ->select('genres.name')
-            ->join('genres', 'genres.id = steam_genres.genre_id')
-            ->where('steam_genres.steam_appid', $id)
+            ->join('genres', 'genres.id = game_genres.genre_id')
+            ->where('game_genres.game_id', $id)
             ->get()
             ->getResultArray();
 
@@ -121,9 +122,9 @@ class Games extends BaseController
         $maxAchievementsQuery = $this->gameModel->select('name, achievements')->orderBy('achievements', 'DESC')->first();
 
         // 4. Group by genres with COUNT (aggregation with JOIN)
-        $genresStats = $this->db->table('steam_genres')
-            ->select('genres.name, COUNT(steam_genres.steam_appid) as game_count')
-            ->join('genres', 'genres.id = steam_genres.genre_id')
+        $genresStats = $this->db->table('game_genres')
+            ->select('genres.name, COUNT(game_genres.game_id) as game_count')
+            ->join('genres', 'genres.id = game_genres.genre_id')
             ->groupBy('genres.id')
             ->orderBy('game_count', 'DESC')
             ->limit(10)
@@ -141,18 +142,18 @@ class Games extends BaseController
     }
 
     /**
-     * Displays form to create a new game.
+     * Displays form to add a new game.
      *
      * @return string|\CodeIgniter\HTTP\RedirectResponse
      */
-    public function create()
+    public function add()
     {
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/login')->with('error', 'Pro přidání hry se musíte přihlásit.');
         }
 
         // Get unique list of developers and publishers for dropdown selection (DB sourced)
-        $developers = $this->db->table('steam')
+        $developers = $this->db->table('games')
             ->select('developer')
             ->distinct()
             ->where('developer !=', '')
@@ -161,7 +162,7 @@ class Games extends BaseController
             ->get()
             ->getResultArray();
 
-        $publishers = $this->db->table('steam')
+        $publishers = $this->db->table('games')
             ->select('publisher')
             ->distinct()
             ->where('publisher !=', '')
@@ -173,7 +174,7 @@ class Games extends BaseController
         // Get all genres for multiselect checkboxes
         $genres = $this->db->table('genres')->orderBy('name', 'ASC')->get()->getResultArray();
 
-        return view('games/create', [
+        return view('games/add', [
             'title'       => 'Přidat hru | Steam DB',
             'developers'  => array_column($developers, 'developer'),
             'publishers'  => array_column($publishers, 'publisher'),
@@ -183,18 +184,18 @@ class Games extends BaseController
     }
 
     /**
-     * Saves a newly created game in DB.
+     * Saves a newly created game in DB (POST handler).
      *
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
-    public function store()
+    public function create()
     {
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/login')->with('error', 'Nepovolený přístup.');
         }
 
         $rules = [
-            'appid'        => 'required|integer|is_unique[steam.appid]',
+            'id'           => 'required|integer|is_unique[games.id]',
             'name'         => 'required|min_length[3]|max_length[255]',
             'release_date' => 'required|valid_date',
             'developer'    => 'required',
@@ -234,11 +235,11 @@ class Games extends BaseController
         // Begin transaction
         $this->db->transStart();
 
-        $appid = $this->request->getPost('appid');
+        $gameId = $this->request->getPost('id');
 
-        // Insert main steam record
+        // Insert main games record
         $this->gameModel->insert([
-            'appid'        => $appid,
+            'id'           => $gameId,
             'name'         => $this->request->getPost('name'),
             'release_date' => $this->request->getPost('release_date'),
             'english'      => (int)$this->request->getPost('english'),
@@ -254,23 +255,23 @@ class Games extends BaseController
         ]);
 
         // Insert descriptions
-        $this->db->table('steam_description')->insert([
-            'steam_appid'          => $appid,
+        $this->db->table('game_descriptions')->insert([
+            'game_id'              => $gameId,
             'detailed_description' => $this->request->getPost('detailed_description') ?? '',
             'about_the_game'       => $this->request->getPost('about_the_game') ?? '',
             'short_description'    => $this->request->getPost('short_description') ?? '',
         ]);
 
         // Insert media
-        $this->db->table('steam_media')->insert([
-            'steam_appid' => $appid,
+        $this->db->table('game_media')->insert([
+            'game_id'     => $gameId,
             'screenshots' => '',
             'background'  => $backgroundPath,
         ]);
 
         // Insert requirements
-        $this->db->table('steam_requirements')->insert([
-            'steam_appid'        => $appid,
+        $this->db->table('game_requirements')->insert([
+            'game_id'            => $gameId,
             'pc_requirements'    => $this->request->getPost('pc_requirements') ?? 'Minimum requirements not specified.',
             'mac_requirements'   => '',
             'linux_requirements' => '',
@@ -278,9 +279,9 @@ class Games extends BaseController
 
         // Insert genres relationships (M:N)
         foreach ($selectedGenres as $genreId) {
-            $this->db->table('steam_genres')->insert([
-                'steam_appid' => $appid,
-                'genre_id'    => $genreId,
+            $this->db->table('game_genres')->insert([
+                'game_id'  => $gameId,
+                'genre_id' => $genreId,
             ]);
         }
 
@@ -292,7 +293,7 @@ class Games extends BaseController
 
         // Save to created games list in session
         $createdGames = session()->get('created_games') ?? [];
-        $createdGames[] = (int)$appid;
+        $createdGames[] = (int)$gameId;
         session()->set('created_games', $createdGames);
 
         // Redirect with alert info
@@ -302,7 +303,7 @@ class Games extends BaseController
     /**
      * Displays form to edit a game.
      *
-     * @param int $id The game AppID
+     * @param int $id The game ID
      * @return string|\CodeIgniter\HTTP\RedirectResponse
      */
     public function edit($id)
@@ -312,11 +313,11 @@ class Games extends BaseController
         }
 
         $game = $this->gameModel
-            ->select('steam.*, steam_description.detailed_description, steam_description.about_the_game, steam_description.short_description, steam_media.background, steam_requirements.pc_requirements')
-            ->join('steam_description', 'steam_description.steam_appid = steam.appid', 'left')
-            ->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left')
-            ->join('steam_requirements', 'steam_requirements.steam_appid = steam.appid', 'left')
-            ->where('steam.appid', $id)
+            ->select('games.*, game_descriptions.detailed_description, game_descriptions.about_the_game, game_descriptions.short_description, game_media.background, game_requirements.pc_requirements')
+            ->join('game_descriptions', 'game_descriptions.game_id = games.id', 'left')
+            ->join('game_media', 'game_media.game_id = games.id', 'left')
+            ->join('game_requirements', 'game_requirements.game_id = games.id', 'left')
+            ->where('games.id', $id)
             ->first();
 
         if (!$game) {
@@ -324,15 +325,15 @@ class Games extends BaseController
         }
 
         // Fetch selected genres ids for checkbox values
-        $selectedGenresQuery = $this->db->table('steam_genres')
+        $selectedGenresQuery = $this->db->table('game_genres')
             ->select('genre_id')
-            ->where('steam_appid', $id)
+            ->where('game_id', $id)
             ->get()
             ->getResultArray();
         $selectedGenres = array_column($selectedGenresQuery, 'genre_id');
 
         // Sourced from DB for selection
-        $developers = $this->db->table('steam')
+        $developers = $this->db->table('games')
             ->select('developer')
             ->distinct()
             ->where('developer !=', '')
@@ -341,7 +342,7 @@ class Games extends BaseController
             ->get()
             ->getResultArray();
 
-        $publishers = $this->db->table('steam')
+        $publishers = $this->db->table('games')
             ->select('publisher')
             ->distinct()
             ->where('publisher !=', '')
@@ -366,7 +367,7 @@ class Games extends BaseController
     /**
      * Updates an existing game in DB.
      *
-     * @param int $id The game AppID
+     * @param int $id The game ID
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
     public function update($id)
@@ -412,7 +413,7 @@ class Games extends BaseController
         // Begin transaction
         $this->db->transStart();
 
-        // Update main steam record
+        // Update main games record
         $this->gameModel->update($id, [
             'name'         => $this->request->getPost('name'),
             'release_date' => $this->request->getPost('release_date'),
@@ -428,8 +429,8 @@ class Games extends BaseController
         ]);
 
         // Update description table
-        $this->db->table('steam_description')
-            ->where('steam_appid', $id)
+        $this->db->table('game_descriptions')
+            ->where('game_id', $id)
             ->update([
                 'detailed_description' => $this->request->getPost('detailed_description') ?? '',
                 'about_the_game'       => $this->request->getPost('about_the_game') ?? '',
@@ -437,25 +438,25 @@ class Games extends BaseController
             ]);
 
         // Update media table
-        $this->db->table('steam_media')
-            ->where('steam_appid', $id)
+        $this->db->table('game_media')
+            ->where('game_id', $id)
             ->update([
                 'background' => $backgroundPath,
             ]);
 
         // Update requirements table
-        $this->db->table('steam_requirements')
-            ->where('steam_appid', $id)
+        $this->db->table('game_requirements')
+            ->where('game_id', $id)
             ->update([
                 'pc_requirements' => $this->request->getPost('pc_requirements') ?? '',
             ]);
 
         // Clear and rewrite genre relations (M:N)
-        $this->db->table('steam_genres')->where('steam_appid', $id)->delete();
+        $this->db->table('game_genres')->where('game_id', $id)->delete();
         foreach ($selectedGenres as $genreId) {
-            $this->db->table('steam_genres')->insert([
-                'steam_appid' => $id,
-                'genre_id'    => $genreId,
+            $this->db->table('game_genres')->insert([
+                'game_id'  => $id,
+                'genre_id' => $genreId,
             ]);
         }
 
@@ -471,7 +472,7 @@ class Games extends BaseController
     /**
      * Soft deletes a game.
      *
-     * @param int $id The game AppID
+     * @param int $id The game ID
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
     public function delete($id)

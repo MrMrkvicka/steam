@@ -10,7 +10,7 @@
     </div>
     <div class="col-md-4 text-md-end mt-3 mt-md-0">
         <?php if (session()->get('isLoggedIn')): ?>
-            <a href="<?= base_url('games/create') ?>" class="btn btn-steam-green py-2 px-4 shadow">
+            <a href="<?= base_url('games/add') ?>" class="btn btn-steam-green py-2 px-4 shadow">
                 <i class="fas fa-plus-circle me-2"></i>Přidat novou hru
             </a>
         <?php endif; ?>
@@ -82,7 +82,7 @@
                             <!-- Helper Price Formatting -->
                             <?= $steamHelper->formatPrice((float)$game['price']) ?>
 
-                            <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                 Detail <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -91,12 +91,12 @@
                     <?php if (session()->get('isLoggedIn')): ?>
                         <!-- Admin controls floating overlays -->
                         <div class="card-footer bg-dark border-top border-secondary d-flex justify-content-between py-2 px-3">
-                            <a href="<?= base_url('games/edit/' . $game['appid']) ?>" class="btn btn-outline-warning btn-sm border-0 py-1 px-2">
+                            <a href="<?= base_url('games/edit/' . $game['id']) ?>" class="btn btn-outline-warning btn-sm border-0 py-1 px-2">
                                 <i class="fas fa-edit me-1"></i>Upravit
                             </a>
                             <button type="button" 
                                     class="btn btn-outline-danger btn-sm border-0 py-1 px-2 btn-delete-trigger" 
-                                    data-id="<?= $game['appid'] ?>" 
+                                    data-id="<?= $game['id'] ?>" 
                                     data-name="<?= esc($game['name']) ?>">
                                 <i class="fas fa-trash-alt me-1"></i>Smazat
                             </button>

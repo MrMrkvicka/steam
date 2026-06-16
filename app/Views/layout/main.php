@@ -221,7 +221,7 @@
                     </li>
                     <?php if (session()->get('isLoggedIn')): ?>
                     <li class="nav-nav-item">
-                        <a class="nav-link text-success <?= url_is('games/create') ? 'active fw-bold' : '' ?>" href="<?= base_url('games/create') ?>">
+                        <a class="nav-link text-success <?= url_is('games/add') ? 'active fw-bold' : '' ?>" href="<?= base_url('games/add') ?>">
                             <i class="fas fa-plus-circle me-1"></i>Přidat hru
                         </a>
                     </li>

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\GameModel;
+use App\Models\Game;
 use App\Libraries\SteamHelper;
 
 class Home extends BaseController
@@ -13,7 +13,7 @@ class Home extends BaseController
 
     public function __construct()
     {
-        $this->gameModel = new GameModel();
+        $this->gameModel = new Game();
         $this->steamHelper = new SteamHelper();
         $this->db = \Config\Database::connect();
     }
@@ -30,16 +30,16 @@ class Home extends BaseController
         if (!empty($library)) {
             // Fetch games that are in the user's library
             $myGames = $this->gameModel
-                ->select('steam.*, steam_media.background')
-                ->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left')
-                ->whereIn('steam.appid', $library)
+                ->select('games.*, game_media.background')
+                ->join('game_media', 'game_media.game_id = games.id', 'left')
+                ->whereIn('games.id', $library)
                 ->findAll();
         }
 
         // Fetch featured/recent games (e.g. cheapest 4 games or 4 recently added)
         $featuredGames = $this->gameModel
-            ->select('steam.*, steam_media.background')
-            ->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left')
+            ->select('games.*, game_media.background')
+            ->join('game_media', 'game_media.game_id = games.id', 'left')
             ->orderBy('price', 'ASC')
             ->where('price >', 0)
             ->limit(4)
@@ -64,25 +64,25 @@ class Home extends BaseController
     /**
      * Toggles a game's presence in the user's session-based library.
      */
-    public function toggleLibrary($appid)
+    public function toggleLibrary($id)
     {
         $session = session();
         $library = $session->get('library') ?? [];
 
         // Fetch game to confirm it exists
-        $game = $this->gameModel->find($appid);
+        $game = $this->gameModel->find($id);
         if (!$game) {
             return redirect()->back()->with('error', 'Hra nebyla nalezena.');
         }
 
-        if (in_array($appid, $library)) {
+        if (in_array($id, $library)) {
             // Remove from library
-            $library = array_diff($library, [$appid]);
+            $library = array_diff($library, [$id]);
             $session->set('library', array_values($library));
             return redirect()->back()->with('success', 'Hra "' . esc($game['name']) . '" byla odebrána z vaší knihovny.');
         } else {
             // Add to library
-            $library[] = (int)$appid;
+            $library[] = (int)$id;
             $session->set('library', $library);
             return redirect()->back()->with('success', 'Hra "' . esc($game['name']) . '" byla přidána do vaší knihovny.');
         }

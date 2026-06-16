@@ -91,10 +91,10 @@
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <?= $steamHelper->formatPrice((float)$game['price']) ?>
                                 <div class="btn-group">
-                                    <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                                    <a href="<?= base_url('games/show/' . $game['id'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                         Detail
                                     </a>
-                                    <a href="<?= base_url('library/toggle/' . $game['appid']) ?>" class="btn btn-outline-danger btn-sm" title="Odebrat z knihovny">
+                                    <a href="<?= base_url('library/toggle/' . $game['id']) ?>" class="btn btn-outline-danger btn-sm" title="Odebrat z knihovny">
                                         <i class="fas fa-times"></i>
                                     </a>
                                 </div>
@@ -140,7 +140,7 @@
                         
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <?= $steamHelper->formatPrice((float)$game['price']) ?>
-                            <a href="<?= base_url('games/show/' . $game['appid'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                 Detail <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>

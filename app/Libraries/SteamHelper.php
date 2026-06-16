@@ -84,7 +84,7 @@ class SteamHelper
     public function getGameImage(array $game): string
     {
         $background = $game['background'] ?? '';
-        $appid = $game['appid'] ?? null;
+        $appid = $game['id'] ?? $game['appid'] ?? null;
 
         // If background is set and is not a placeholder or empty
         if (!empty($background) && strpos($background, 'placeholder') === false && strpos($background, 'via.placeholder') === false) {

@@ -37,9 +37,9 @@ class CreateSteamTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->createTable('users', true);
 
-        // 2. steam Table
+        // 2. games Table
         $this->forge->addField([
-            'appid' => [
+            'id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -109,12 +109,12 @@ class CreateSteamTables extends Migration
                 'null' => true,
             ],
         ]);
-        $this->forge->addKey('appid', true);
-        $this->forge->createTable('steam', true);
+        $this->forge->addKey('id', true);
+        $this->forge->createTable('games', true);
 
-        // 3. steam_description Table
+        // 3. game_descriptions Table
         $this->forge->addField([
-            'steam_appid' => [
+            'game_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -130,12 +130,12 @@ class CreateSteamTables extends Migration
                 'constraint' => 1000,
             ],
         ]);
-        $this->forge->addKey('steam_appid', true);
-        $this->forge->createTable('steam_description', true);
+        $this->forge->addKey('game_id', true);
+        $this->forge->createTable('game_descriptions', true);
 
-        // 4. steam_media Table
+        // 4. game_media Table
         $this->forge->addField([
-            'steam_appid' => [
+            'game_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -148,12 +148,12 @@ class CreateSteamTables extends Migration
                 'constraint' => 255,
             ],
         ]);
-        $this->forge->addKey('steam_appid', true);
-        $this->forge->createTable('steam_media', true);
+        $this->forge->addKey('game_id', true);
+        $this->forge->createTable('game_media', true);
 
-        // 5. steam_requirements Table
+        // 5. game_requirements Table
         $this->forge->addField([
-            'steam_appid' => [
+            'game_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -171,8 +171,8 @@ class CreateSteamTables extends Migration
                 'constraint' => 3000,
             ],
         ]);
-        $this->forge->addKey('steam_appid', true);
-        $this->forge->createTable('steam_requirements', true);
+        $this->forge->addKey('game_id', true);
+        $this->forge->createTable('game_requirements', true);
 
         // 6. genres Table (For M:N relation)
         $this->forge->addField([
@@ -191,9 +191,9 @@ class CreateSteamTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->createTable('genres', true);
 
-        // 7. steam_genres Table (M:N Pivot Table)
+        // 7. game_genres Table (M:N Pivot Table)
         $this->forge->addField([
-            'steam_appid' => [
+            'game_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -204,18 +204,18 @@ class CreateSteamTables extends Migration
                 'unsigned'   => true,
             ],
         ]);
-        $this->forge->addKey(['steam_appid', 'genre_id'], true);
-        $this->forge->createTable('steam_genres', true);
+        $this->forge->addKey(['game_id', 'genre_id'], true);
+        $this->forge->createTable('game_genres', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('steam_genres', true);
+        $this->forge->dropTable('game_genres', true);
         $this->forge->dropTable('genres', true);
-        $this->forge->dropTable('steam_requirements', true);
-        $this->forge->dropTable('steam_media', true);
-        $this->forge->dropTable('steam_description', true);
-        $this->forge->dropTable('steam', true);
+        $this->forge->dropTable('game_requirements', true);
+        $this->forge->dropTable('game_media', true);
+        $this->forge->dropTable('game_descriptions', true);
+        $this->forge->dropTable('games', true);
         $this->forge->dropTable('users', true);
     }
 }

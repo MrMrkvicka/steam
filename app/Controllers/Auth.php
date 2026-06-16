@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\UserModel;
+use App\Models\User;
 
 class Auth extends BaseController
 {
@@ -35,7 +35,7 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Vyplňte uživatelské jméno a heslo.');
         }
 
-        $userModel = new UserModel();
+        $userModel = new User();
         $user = $userModel->where('username', $username)->first();
 
         if ($user && password_verify($password, $user['password_hash'])) {
