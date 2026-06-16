@@ -182,6 +182,17 @@
             border-color: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.2);
         }
+        
+        /* High Legibility text overrides for dark theme */
+        .text-muted {
+            color: #a2b3c4 !important;
+        }
+        .text-secondary {
+            color: #b0c4d6 !important;
+        }
+        .game-card {
+            color: var(--steam-light);
+        }
     </style>
 </head>
 <body>
