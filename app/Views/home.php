@@ -78,11 +78,7 @@
                 <div class="col-sm-6 col-md-4 col-lg-3">
                     <div class="card game-card">
                         <div class="game-card-img-wrapper">
-                            <?php if (!empty($game['background'])): ?>
-                                <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img">
-                            <?php else: ?>
-                                <img src="https://via.placeholder.com/460x215.png?text=No+Image" alt="No image" class="game-card-img">
-                            <?php endif; ?>
+                            <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=No+Image';">
                         </div>
                         <div class="card-body d-flex flex-column p-3">
                             <h5 class="card-title text-truncate fw-bold mb-1" title="<?= esc($game['name']) ?>">
@@ -132,11 +128,7 @@
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card game-card">
                     <div class="game-card-img-wrapper">
-                        <?php if (!empty($game['background'])): ?>
-                            <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img">
-                        <?php else: ?>
-                            <img src="https://via.placeholder.com/460x215.png?text=No+Image" alt="No image" class="game-card-img">
-                        <?php endif; ?>
+                        <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="game-card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=No+Image';">
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <h5 class="card-title text-truncate fw-bold mb-1" title="<?= esc($game['name']) ?>">

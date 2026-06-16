@@ -15,11 +15,7 @@
     <div class="row g-0">
         <!-- Media / Header Column -->
         <div class="col-md-6 bg-black d-flex align-items-center justify-content-center" style="min-height: 300px;">
-            <?php if (!empty($game['background'])): ?>
-                <img src="<?= esc($game['background']) ?>" alt="<?= esc($game['name']) ?>" class="img-fluid w-100" style="max-height: 450px; object-fit: cover;">
-            <?php else: ?>
-                <img src="https://via.placeholder.com/460x215.png?text=Bez+obrazku" alt="No image" class="img-fluid">
-            <?php endif; ?>
+            <img src="<?= esc($steamHelper->getGameImage($game)) ?>" alt="<?= esc($game['name']) ?>" class="img-fluid w-100" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/460x215.png?text=Bez+obrazku';">
         </div>
         
         <!-- Quick Info Column -->

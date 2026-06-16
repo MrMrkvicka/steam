@@ -71,4 +71,31 @@ class SteamHelper
         }
         return $html;
     }
+
+    /**
+     * Returns a valid image URL for a game.
+     * If a custom background image is uploaded, it returns it.
+     * Otherwise, it falls back to the official Steam header CDN URL using the AppID.
+     * If the AppID is invalid, it returns a placeholder.
+     *
+     * @param array $game The game array containing appid and background
+     * @return string The image URL
+     */
+    public function getGameImage(array $game): string
+    {
+        $background = $game['background'] ?? '';
+        $appid = $game['appid'] ?? null;
+
+        // If background is set and is not a placeholder or empty
+        if (!empty($background) && strpos($background, 'placeholder') === false && strpos($background, 'via.placeholder') === false) {
+            return $background;
+        }
+
+        // Fallback to Steam CDN header
+        if (!empty($appid)) {
+            return 'https://cdn.akamai.steamstatic.com/steam/apps/' . $appid . '/header.jpg';
+        }
+
+        return 'https://via.placeholder.com/460x215.png?text=No+Image'; // fallback
+    }
 }
