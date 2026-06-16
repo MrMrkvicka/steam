@@ -104,7 +104,7 @@
 
         .game-card-img-wrapper {
             position: relative;
-            padding-top: 56.25%; /* 16:9 ratio */
+            padding-top: 46.74%; /* 460:215 Steam header ratio */
             overflow: hidden;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;

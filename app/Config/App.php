@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost/smid/steam/';
+    public string $baseURL = 'http://localhost/sestak/steam/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
