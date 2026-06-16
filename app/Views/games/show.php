@@ -27,17 +27,32 @@
             <div>
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h1 class="fw-bold text-white mb-0 fs-2"><?= esc($game['name']) ?></h1>
-                    <?php if (session()->get('isLoggedIn')): ?>
-                        <div class="btn-group">
-                            <a href="<?= base_url('games/edit/' . $game['appid']) ?>" class="btn btn-outline-warning btn-sm">
-                                <i class="fas fa-edit me-1"></i>Upravit
+                    <div class="d-flex gap-2 align-items-center">
+                        <?php 
+                        $inLibrary = in_array($game['appid'], session()->get('library') ?? []);
+                        if ($inLibrary): 
+                        ?>
+                            <a href="<?= base_url('library/toggle/' . $game['appid']) ?>" class="btn btn-success btn-sm py-1 px-3">
+                                <i class="fas fa-bookmark me-1"></i>V knihovně
                             </a>
-                            <button type="button" class="btn btn-outline-danger btn-sm btn-delete-trigger" 
-                                    data-id="<?= $game['appid'] ?>" data-name="<?= esc($game['name']) ?>">
-                                <i class="fas fa-trash-alt me-1"></i>Smazat
-                            </button>
-                        </div>
-                    <?php endif; ?>
+                        <?php else: ?>
+                            <a href="<?= base_url('library/toggle/' . $game['appid']) ?>" class="btn btn-steam-outline btn-sm py-1 px-3">
+                                <i class="far fa-bookmark me-1"></i>Do knihovny
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if (session()->get('isLoggedIn')): ?>
+                            <div class="btn-group">
+                                <a href="<?= base_url('games/edit/' . $game['appid']) ?>" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Upravit
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-sm btn-delete-trigger" 
+                                        data-id="<?= $game['appid'] ?>" data-name="<?= esc($game['name']) ?>">
+                                    <i class="fas fa-trash-alt me-1"></i>Smazat
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <p class="text-info small mb-3">AppID: <?= esc($game['appid']) ?></p>

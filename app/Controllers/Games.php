@@ -32,13 +32,35 @@ class Games extends BaseController
         $this->gameModel->select('steam.*, steam_media.background');
         $this->gameModel->join('steam_media', 'steam_media.steam_appid = steam.appid', 'left');
         
+        $filter = $this->request->getGet('filter');
+        $activeFilter = '';
+        
+        if ($filter === 'library') {
+            $library = session()->get('library') ?? [];
+            if (!empty($library)) {
+                $this->gameModel->whereIn('steam.appid', $library);
+            } else {
+                $this->gameModel->where('steam.appid', 0); // Force empty result
+            }
+            $activeFilter = 'library';
+        } elseif ($filter === 'created') {
+            $created = session()->get('created_games') ?? [];
+            if (!empty($created)) {
+                $this->gameModel->whereIn('steam.appid', $created);
+            } else {
+                $this->gameModel->where('steam.appid', 0); // Force empty result
+            }
+            $activeFilter = 'created';
+        }
+        
         $games = $this->gameModel->paginate($this->steamConfig->gamesPerPage);
         
         return view('games/index', [
-            'title'       => 'Přehled her | Steam DB',
-            'games'       => $games,
-            'pager'       => $this->gameModel->pager,
-            'steamHelper' => $this->steamHelper,
+            'title'        => 'Přehled her | Steam DB',
+            'games'        => $games,
+            'pager'        => $this->gameModel->pager,
+            'steamHelper'  => $this->steamHelper,
+            'activeFilter' => $activeFilter,
         ]);
     }
 
@@ -60,7 +82,7 @@ class Games extends BaseController
             ->first();
 
         if (!$game) {
-            return redirect()->to('/')->with('error', 'Hra nebyla nalezena.');
+            return redirect()->to('games')->with('error', 'Hra nebyla nalezena.');
         }
 
         // Get genres using M:N relationship
@@ -268,8 +290,13 @@ class Games extends BaseController
             return redirect()->back()->withInput()->with('error', 'Hru se nepodařilo uložit do databáze.');
         }
 
+        // Save to created games list in session
+        $createdGames = session()->get('created_games') ?? [];
+        $createdGames[] = (int)$appid;
+        session()->set('created_games', $createdGames);
+
         // Redirect with alert info
-        return redirect()->to('/')->with('success', 'Hra "' . esc($this->request->getPost('name')) . '" byla úspěšně přidána!');
+        return redirect()->to('games')->with('success', 'Hra "' . esc($this->request->getPost('name')) . '" byla úspěšně přidána!');
     }
 
     /**
@@ -293,7 +320,7 @@ class Games extends BaseController
             ->first();
 
         if (!$game) {
-            return redirect()->to('/')->with('error', 'Hra nebyla nalezena.');
+            return redirect()->to('games')->with('error', 'Hra nebyla nalezena.');
         }
 
         // Fetch selected genres ids for checkbox values
@@ -455,14 +482,14 @@ class Games extends BaseController
 
         $game = $this->gameModel->find($id);
         if (!$game) {
-            return redirect()->to('/')->with('error', 'Hra nebyla nalezena.');
+            return redirect()->to('games')->with('error', 'Hra nebyla nalezena.');
         }
 
         // Soft delete using Model delete method
         if ($this->gameModel->delete($id)) {
-            return redirect()->to('/')->with('success', 'Hra "' . esc($game['name']) . '" byla úspěšně smazána.');
+            return redirect()->to('games')->with('success', 'Hra "' . esc($game['name']) . '" byla úspěšně smazána.');
         }
 
-        return redirect()->to('/')->with('error', 'Při mazání hry došlo k chybě.');
+        return redirect()->to('games')->with('error', 'Při mazání hry došlo k chybě.');
     }
 }

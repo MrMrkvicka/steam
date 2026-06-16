@@ -3,9 +3,10 @@
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Games::index');
+$routes->get('/', 'Home::index');
 $routes->get('games', 'Games::index');
 $routes->get('stats', 'Games::stats');
+$routes->get('library/toggle/(:num)', 'Home::toggleLibrary/$1');
 
 // Game Details route with two parameters (ID and slug) for SEO and assignment requirement
 $routes->get('games/show/(:num)/(:any)', 'Games::show/$1/$2');
