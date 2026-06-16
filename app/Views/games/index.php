@@ -23,27 +23,47 @@
 </div>
 
 <!-- Filter Buttons Section -->
-<div class="mb-4 d-flex flex-wrap gap-2 align-items-center justify-content-between p-3 rounded" style="background-color: var(--steam-bg-card); border: 1px solid rgba(255, 255, 255, 0.05);">
+<div class="mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-between p-3 rounded" style="background-color: var(--steam-bg-card); border: 1px solid rgba(255, 255, 255, 0.05);">
     <div class="d-flex flex-wrap align-items-center gap-2">
         <span class="text-muted small me-2"><i class="fas fa-filter text-info"></i> Filtrovat hry:</span>
-        <a href="<?= base_url('games') ?>" class="btn <?= empty($activeFilter) ? 'btn-steam-blue' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games' . (!empty($search) ? '?search=' . urlencode($search) : '')) ?>" class="btn <?= empty($activeFilter) ? 'btn-steam-blue' : 'btn-steam-outline' ?> btn-sm px-3">
             Všechny hry
         </a>
-        <a href="<?= base_url('games?filter=library') ?>" class="btn <?= $activeFilter === 'library' ? 'btn-success text-white' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games?filter=library' . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>" class="btn <?= $activeFilter === 'library' ? 'btn-success text-white' : 'btn-steam-outline' ?> btn-sm px-3">
             <i class="fas fa-bookmark me-1"></i>Moje knihovna
         </a>
-        <a href="<?= base_url('games?filter=created') ?>" class="btn <?= $activeFilter === 'created' ? 'btn-warning text-dark fw-bold' : 'btn-steam-outline' ?> btn-sm px-3">
+        <a href="<?= base_url('games?filter=created' . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>" class="btn <?= $activeFilter === 'created' ? 'btn-warning text-dark fw-bold' : 'btn-steam-outline' ?> btn-sm px-3">
             <i class="fas fa-plus-circle me-1"></i>Moje přidané (vytvořené)
         </a>
     </div>
-    
-    <?php if (!empty($activeFilter)): ?>
-        <div>
-            <a href="<?= base_url('games') ?>" class="text-danger text-decoration-none small">
-                Zrušit filtr <i class="fas fa-times ms-1"></i>
-            </a>
-        </div>
-    <?php endif; ?>
+
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <!-- Search form -->
+        <form action="<?= base_url('games') ?>" method="get" class="d-flex align-items-center">
+            <?php if (!empty($activeFilter)): ?>
+                <input type="hidden" name="filter" value="<?= esc($activeFilter) ?>">
+            <?php endif; ?>
+            <div class="input-group input-group-sm">
+                <input type="text" name="search" class="form-control bg-dark border-secondary text-light" placeholder="Hledat podle názvu..." value="<?= esc($search ?? '') ?>" style="max-width: 220px;">
+                <button class="btn btn-steam-blue" type="submit" title="Hledat">
+                    <i class="fas fa-search"></i>
+                </button>
+                <?php if (!empty($search)): ?>
+                    <a href="<?= base_url('games' . (!empty($activeFilter) ? '?filter=' . $activeFilter : '')) ?>" class="btn btn-outline-danger d-flex align-items-center justify-content-center" title="Vymazat vyhledávání">
+                        <i class="fas fa-times"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </form>
+        
+        <?php if (!empty($activeFilter) || !empty($search)): ?>
+            <div>
+                <a href="<?= base_url('games') ?>" class="text-danger text-decoration-none small" title="Zrušit všechny filtry a vyhledávání">
+                    Zrušit vše <i class="fas fa-times-circle ms-1"></i>
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Games Grid Section -->

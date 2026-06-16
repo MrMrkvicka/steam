@@ -54,6 +54,11 @@ class Games extends BaseController
             $activeFilter = 'created';
         }
         
+        $search = $this->request->getGet('search');
+        if (!empty($search)) {
+            $this->gameModel->like('games.name', trim($search));
+        }
+        
         $games = $this->gameModel->paginate($this->steamConfig->perPage ?? 20);
         
         return view('games/index', [
@@ -62,6 +67,7 @@ class Games extends BaseController
             'pager'        => $this->gameModel->pager,
             'steamHelper'  => $this->steamHelper,
             'activeFilter' => $activeFilter,
+            'search'       => $search,
         ]);
     }
 
