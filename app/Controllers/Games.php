@@ -472,7 +472,7 @@ class Games extends BaseController
             return redirect()->back()->withInput()->with('error', 'Změny se nepodařilo uložit do databáze.');
         }
 
-        return redirect()->to('games/show/' . $id . '/' . url_title($this->request->getPost('name')))->with('success', 'Hra byla úspěšně upravena!');
+        return redirect()->to('games/show/' . $id . '/' . $this->steamHelper->slugify($this->request->getPost('name')))->with('success', 'Hra byla úspěšně upravena!');
     }
 
     /**

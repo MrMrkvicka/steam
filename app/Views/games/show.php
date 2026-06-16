@@ -125,7 +125,7 @@
         <div class="card bg-dark text-light border border-secondary shadow-sm p-4 h-100" style="background-color: var(--steam-bg-card) !important;">
             <h3 class="border-bottom border-secondary pb-2 mb-3 text-info fw-bold"><i class="fas fa-desktop me-2"></i>Požadavky na PC</h3>
             <div class="pc-requirements text-muted small lh-lg">
-                <?= nl2br($game['pc_requirements'] ?? 'Minimální požadavky nebyly definovány.') ?>
+                <?= $steamHelper->parseRequirements($game['pc_requirements'] ?? '') ?>
             </div>
         </div>
     </div>

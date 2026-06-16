@@ -102,7 +102,7 @@
                             <!-- Helper Price Formatting -->
                             <?= $steamHelper->formatPrice((float)$game['price']) ?>
 
-                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
+                            <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline btn-sm">
                                 Detail <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -137,9 +137,7 @@
 <!-- Pagination Links (Stránkování) -->
 <?php if ($pager): ?>
     <div class="d-flex justify-content-center mt-5">
-        <div class="bg-dark p-2 rounded shadow-sm border border-secondary">
-            <?= $pager->links() ?>
-        </div>
+        <?= $pager->links('default', 'steam_pager') ?>
     </div>
 <?php endif; ?>
 

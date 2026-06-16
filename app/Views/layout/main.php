@@ -237,6 +237,9 @@
                             <i class="fas fa-sign-out-alt me-1"></i>Odhlásit se
                         </a>
                     <?php else: ?>
+                        <a href="<?= base_url('register') ?>" class="btn btn-steam-outline btn-sm me-2">
+                            <i class="fas fa-user-plus me-1"></i>Registrace
+                        </a>
                         <a href="<?= base_url('login') ?>" class="btn btn-steam-blue btn-sm">
                             <i class="fas fa-sign-in-alt me-1"></i>Přihlásit se
                         </a>

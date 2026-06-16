@@ -9,7 +9,7 @@
         <div class="mb-4">
             <?= $steamHelper->generateBreadcrumbs([
                 'Hry' => 'games',
-                $game['name'] => 'games/show/' . $game['id'] . '/' . url_title($game['name']),
+                $game['name'] => 'games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name']),
                 'Upravit' => null
             ]) ?>
         </div>
@@ -166,13 +166,13 @@
 
                         <div class="mb-3">
                             <label for="pc_requirements" class="form-label">Minimální PC Požadavky</label>
-                            <textarea name="pc_requirements" id="pc_requirements" class="form-control bg-dark border-secondary text-light" rows="4"><?= old('pc_requirements', $game['pc_requirements']) ?></textarea>
+                            <textarea name="pc_requirements" id="pc_requirements" class="form-control bg-dark border-secondary text-light" rows="4"><?= old('pc_requirements', $steamHelper->getCleanRequirements($game['pc_requirements'])) ?></textarea>
                         </div>
                     </div>
 
                     <!-- Submit Actions -->
                     <div class="d-flex justify-content-end gap-3 mt-4 border-top border-secondary pt-3">
-                        <a href="<?= base_url('games/show/' . $game['id'] . '/' . url_title($game['name'])) ?>" class="btn btn-steam-outline py-2 px-4">Zrušit</a>
+                        <a href="<?= base_url('games/show/' . $game['id'] . '/' . $steamHelper->slugify($game['name'])) ?>" class="btn btn-steam-outline py-2 px-4">Zrušit</a>
                         <button type="submit" class="btn btn-steam-green py-2 px-5">
                             <i class="fas fa-save me-2"></i>Uložit změny
                         </button>
